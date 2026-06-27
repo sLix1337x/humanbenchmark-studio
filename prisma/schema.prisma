@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Player {
+  id        String       @id @default(cuid())
+  name      String
+  nameKey   String       @unique
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  matches   SavedMatch[]
+}
+
+model SavedMatch {
+  id          String           @id @default(cuid())
+  roomCode    String
+  opponent    String
+  result      MatchResult
+  averageMs   Int?
+  bestMs      Int?
+  falseStarts Int              @default(0)
+  createdAt   DateTime         @default(now())
+  playerId    String
+  player      Player           @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  rounds      SavedMatchRound[]
+
+  @@unique([playerId, roomCode])
+  @@index([playerId, createdAt(sort: Desc)])
+}
+
+model SavedMatchRound {
+  id         String     @id @default(cuid())
+  round      Int
+  reactionMs Int?
+  falseStart Boolean    @default(false)
+  matchId    String
+  match      SavedMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId, round])
+}
+
+enum MatchResult {
+  WIN
+  LOSS
+  TIE
+}

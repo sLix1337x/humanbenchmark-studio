@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+:root {
+  --background: #242423;
+  --foreground: #edf3fb;
+  --heading: #8dbff2;
+  --body: #c8d2dc;
+  --body-subtle: #8e99a4;
+  --panel: #2b2b2a;
+  --panel-soft: #313130;
+  --panel-strong: #3a3a39;
+  --accent: #4f8fd3;
+  --accent-soft: #3f79b6;
+  --accent-strong: #78aee8;
+  --accent-secondary: #6ca7e6;
+  --success: #4eb78b;
+  --warning: #f59e2b;
+  --danger: #eb6b61;
+  --border: #41464a;
+  --border-strong: #555b60;
+  --border-soft: #363a3d;
+  --foreground-strong: #f7fbff;
+  --info-soft: #2d3b4a;
+  --info-border: #58779a;
+  --success-soft: #253830;
+  --success-border: #3f7f67;
+  --warning-soft: #403626;
+  --warning-border: #8d6b2f;
+  --danger-soft: #412b29;
+  --danger-border: #8f5a54;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-space-grotesk), Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+
+.text-muted {
+  color: var(--body-subtle);
+}
+
+.page-shell {
+  max-width: 1152px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 24px;
+  border-left: 1px solid var(--border-strong);
+  border-right: 1px solid var(--border-strong);
+}
+
+.page-shell-tight {
+  max-width: 1152px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 12px 24px 32px;
+  border-left: 1px solid var(--border-strong);
+  border-right: 1px solid var(--border-strong);
+}
+
+.section-frame {
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.surface-frame {
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.primary-button {
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--foreground-strong);
+  border: 1px solid var(--accent);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.primary-button:hover {
+  background: var(--accent-soft);
+}
+
+.secondary-button {
+  border-radius: 12px;
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border-strong);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.secondary-button:hover {
+  background: var(--panel-soft);
+  border-color: var(--accent-soft);
+  color: var(--foreground-strong);
+}
