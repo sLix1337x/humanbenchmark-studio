@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { isStaticDemo } from "@/lib/app-mode";
 
 const games = [
   {
@@ -82,6 +83,11 @@ export default function Home() {
       <section className="section-frame py-8">
         <div className="overflow-hidden rounded-xl border border-[var(--border-strong)] bg-[var(--panel)]">
           <div className="flex min-h-[420px] flex-col items-center justify-center px-6 py-16 text-center">
+            {isStaticDemo ? (
+              <p className="mb-5 rounded-full border border-[var(--border-strong)] bg-[var(--panel-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--body-subtle)]">
+                GitHub Pages demo: solo play is live, while duel rooms and saved history stay in the full app.
+              </p>
+            ) : null}
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[var(--body-subtle)]">
               Multiplayer Benchmark Lab
             </p>
@@ -105,7 +111,7 @@ export default function Home() {
                 Open Reaction Time
               </ButtonLink>
               <ButtonLink href="/leaderboard" variant="secondary" size="lg">
-                View Leaderboard
+                {isStaticDemo ? "Demo Leaderboard" : "View Leaderboard"}
               </ButtonLink>
             </div>
           </div>

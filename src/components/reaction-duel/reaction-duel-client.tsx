@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
+import { isStaticDemo } from "@/lib/app-mode";
 
 type SoloPhase = "idle" | "waiting" | "ready" | "result" | "tooSoon";
 type Mode = "solo" | "duel";
@@ -99,7 +100,7 @@ export function ReactionDuelClient() {
   const [roomCodeInput, setRoomCodeInput] = useState("");
   const [room, setRoom] = useState<RoomSnapshot | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
-  const [socketStatus, setSocketStatus] = useState("Connecting...");
+  const [socketStatus, setSocketStatus] = useState(isStaticDemo ? "Demo mode" : "Connecting...");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState<"create" | "join" | "ready" | "start" | "leave" | "save" | null>(null);
@@ -129,6 +130,17 @@ export function ReactionDuelClient() {
   }, [clearReadyFrame]);
 
   useEffect(() => {
+    if (isStaticDemo) {
+      setSocketStatus("GitHub Pages demo");
+
+      return () => {
+        clearReadyFrame();
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+      };
+    }
+
     const socket = getSocket();
     socketRef.current = socket;
 
@@ -350,6 +362,11 @@ export function ReactionDuelClient() {
   }
 
   async function handleSaveSoloScore() {
+    if (isStaticDemo) {
+      setErrorMessage("Score saving is disabled on the GitHub Pages demo.");
+      return;
+    }
+
     const trimmedName = playerName.trim().slice(0, 24);
 
     if (trimmedName.length < 2) {
@@ -555,6 +572,11 @@ export function ReactionDuelClient() {
       return;
     }
 
+    if (nextMode === "duel" && isStaticDemo) {
+      setErrorMessage("Duel rooms are disabled on the GitHub Pages demo. Use the full app locally for multiplayer.");
+      return;
+    }
+
     clearPendingTimer();
     clearReadyFrame();
     startedAtRef.current = null;
@@ -735,16 +757,22 @@ export function ReactionDuelClient() {
                   className="w-full rounded-xl border border-white/20 bg-[#0d0b08]/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/45 focus:border-[var(--accent-secondary)]/70 focus-visible:ring-2 focus-visible:ring-[var(--accent-secondary)]/30"
                 />
               </div>
-              {saveNotice ? <p className="text-sm text-white/90">{saveNotice}</p> : null}
+              {isStaticDemo ? (
+                <p className="text-sm text-white/90">
+                  GitHub Pages demo mode does not support saved scores, history, or profiles yet.
+                </p>
+              ) : saveNotice ? (
+                <p className="text-sm text-white/90">{saveNotice}</p>
+              ) : null}
               <div className="flex flex-wrap justify-center gap-3">
                 <Button
                   onClick={handleSaveSoloScore}
                   loading={busyAction === "save"}
-                  disabled={saveNotice !== null}
+                  disabled={isStaticDemo || saveNotice !== null}
                   size="lg"
                   className="border-[var(--accent-secondary)] bg-[var(--accent-secondary)] text-[var(--foreground-strong)] hover:border-[var(--accent-strong)] hover:bg-[var(--accent-strong)]"
                 >
-                  {saveNotice ? "Saved" : "Save score"}
+                  {isStaticDemo ? "Save unavailable" : saveNotice ? "Saved" : "Save score"}
                 </Button>
                 <Button variant="secondary" onClick={resetSoloRun} size="lg" className="border-white/25 bg-black/20 text-white hover:border-white/40 hover:bg-black/30">
                   Try again
@@ -819,7 +847,9 @@ export function ReactionDuelClient() {
           <p className="mt-3 text-base leading-7 text-[var(--body)]">
             {mode === "duel"
               ? "Reaction time is measured on the client with performance.now() using pointer-down input and a paint-synced ready timestamp, while the server still controls room state and validates each round."
-              : `Complete ${SOLO_REACTION_GOAL} valid reactions to get your final average. False starts do not count toward the five, and you can save the finished run under a player name.`}
+              : isStaticDemo
+                ? `Complete ${SOLO_REACTION_GOAL} valid reactions to get your final average. This GitHub Pages demo keeps the solo test playable, but score saving and multiplayer stay in the full app.`
+                : `Complete ${SOLO_REACTION_GOAL} valid reactions to get your final average. False starts do not count toward the five, and you can save the finished run under a player name.`}
           </p>
           {mode === "duel" && room ? (
             <div className="mt-4 flex flex-wrap gap-3">

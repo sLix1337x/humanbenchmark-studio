@@ -4,9 +4,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card, CardDescription } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
-import { getPlayerHistory } from "@/lib/reaction-duel-data";
-
-export const dynamic = "force-dynamic";
+import { isStaticDemo } from "@/lib/app-mode";
 
 type ProfilePageProps = {
   params: Promise<{
@@ -14,8 +12,17 @@ type ProfilePageProps = {
   }>;
 };
 
+export function generateStaticParams() {
+  return [];
+}
+
 export default async function ProfilePage({ params }: ProfilePageProps) {
+  if (isStaticDemo) {
+    notFound();
+  }
+
   const resolvedParams = await params;
+  const { getPlayerHistory } = await import("@/lib/reaction-duel-data");
   const data = await getPlayerHistory(decodeURIComponent(resolvedParams.playerName));
 
   if (!data) {
